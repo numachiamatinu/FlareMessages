@@ -1,0 +1,4 @@
+Flare Messages bundles these libraries, renamed to dev.tmdevelopment.flaremessages.libs:
+- Adventure + MiniMessage 4.20.0 (KyoriPowered) - MIT License
+- examination (KyoriPowered) - MIT License
+Their license texts are in this folder.

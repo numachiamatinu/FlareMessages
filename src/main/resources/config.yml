@@ -1,0 +1,127 @@
+#  Flare Messages · config.yml · by TMDevelopment
+#  Main settings. The messages themselves are in welcome.yml and announcements.yml.
+#  After editing any file: /fmessages reload   (it also tells you the line of any mistake)
+#
+#  Files of the plugin
+#    config.yml          this file: modules, face, server name, date / time
+#    welcome.yml         join / quit messages, welcome on every join, first join
+#    announcements.yml   automatic announcements
+#    lang/en.yml         answers of the commands
+#    data.yml            saved data (unique players counter) - don't edit
+#
+#  ── Format ──────────────────────────────────────────────
+#  Colors    &a &c &e &f &7 ...   &l bold  &o italic  &n underline  &m strike  &k magic  &r reset
+#  Hex       "&#2F80EDText"   "{#2F80ED}Text"   "<#2F80ED>Text"
+#  Gradient  "<gradient:#2F80ED:#56CCF2>Text</gradient>"   Rainbow "<rainbow>Text</rainbow>"
+#  Click     "<click:run_command:'/spawn'>Text</click>"   "<click:open_url:'https://...'>Text</click>"
+#            "<click:suggest_command:'/msg '>Text</click>"  (writes it in the chat bar)
+#  Hover     "<hover:show_text:'&7Text when the mouse is on it'>Text</hover>"
+#  Center    "<center>Text"   (at the start of a chat line, centers it)
+#  New line  "<newline>"   (inside hover texts)
+#  Tip       always write texts between "quotes", and use spaces (never TAB) to indent
+
+config-version: 1
+
+# Language of the command answers: en (or your own file in lang/, e.g. a copy of en.yml as lang/it.yml -> it)
+language: en
+
+# Anonymous usage statistics (TMDStats): plugin and Minecraft version, server software, player count,
+# language, modules on/off, number of announcements and join formats, PlaceholderAPI on/off.
+# No player names, no IPs, no texts from your files. false = this plugin sends nothing.
+# To turn them off for every TMDevelopment plugin: plugins/TMDStats/config.yml
+stats: true
+
+# Checks GitHub for a newer FlareMessages (read only, nothing is sent): one line in the console,
+# a message to admins when they join, and /fmessages about. The answer is kept for 6 hours. false = never check.
+update-check: true
+
+# Missing plugins are downloaded and started automatically (no restart needed).
+# Sources are tried in order: modrinth:<slug>, hangar:<slug>, github:<owner/repo>, url:<direct link>
+# Turn off "enabled" if you prefer to install everything by hand.
+auto-install:
+  enabled: true
+  plugins:
+    PlaceholderAPI:
+      enabled: true
+      sources:
+        - "hangar:PlaceholderAPI"
+        - "modrinth:placeholderapi"
+        - "github:PlaceholderAPI/PlaceholderAPI"
+
+# Turn whole parts of the plugin on / off (true = on, false = off)
+modules:
+  # Join / quit messages in chat (welcome.yml > join-quit).
+  # false = Minecraft's normal "Player joined the game" message is kept.
+  # Note: on Spigot join / quit messages can't be clicked or hovered (colors and hex work);
+  # on Paper and its forks everything works.
+  join-quit: true
+  # Private message to the player on every join (welcome.yml > welcome)
+  welcome: true
+  # First join: message to the new player + announcement to everyone (welcome.yml > first-join)
+  first-join: true
+  # Automatic announcements every X seconds (announcements.yml).
+  # false = they are never sent automatically, but /fmessages announce <id> still works.
+  announcements: true
+
+join-quit:
+  # true = NO join / quit message at all (not even the Minecraft one). Good for big servers.
+  hide-join: false
+  hide-quit: false
+
+# Value of {server_name} in every message
+server-name: "My Server"
+# Format of {date} and {time}.  dd = day, MM = month, yyyy = year, HH = hour (24h), mm = minutes
+# Examples: "dd/MM/yyyy"  "MM-dd-yyyy"  "hh:mm a" (12h with AM/PM)
+date-format: "dd.MM.yyyy"
+time-format: "HH:mm"
+# Timezone of {date} and {time}. "" = timezone of the machine.
+# Examples: "Europe/Rome"  "Europe/Bucharest"  "America/New_York"  "UTC"
+timezone: ""
+
+# Max boss bars of this plugin a player can see at the same time.
+# When a new one arrives and the limit is reached, the oldest one is removed.
+max-bossbars-per-player: 3
+
+# Settings of /fmessages broadcast <type> <text> (quick messages written in the command)
+quick-broadcast:
+  # how long the action bar stays on screen (seconds)
+  actionbar-seconds: 5
+  # times in ticks (20 ticks = 1 second)
+  title:
+    fade-in: 10
+    stay: 60
+    fade-out: 20
+  bossbar:
+    # PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE
+    color: BLUE
+    # PROGRESS (full bar), NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20 (bar split in parts)
+    style: PROGRESS
+    # seconds before it disappears (the bar goes down while it waits)
+    seconds: 10
+
+# Face of the player's skin in chat (8x8 pixels), used by "face: true" in the messages.
+# How it works: the skin is downloaded in the background (never lags the server),
+# then kept in memory and on disk, so from the second join it's instant.
+face:
+  # Character used for every pixel. "█" gives the classic square face.
+  # Other ideas: "■" (smaller squares)
+  symbol: "█"
+  # true = also shows the second layer of the skin (hat, hair, glasses...)
+  hat-layer: true
+  # On the very first join the skin isn't cached yet: the welcome waits at most this
+  # many milliseconds for it (1000 = 1 second), then it's sent with the Steve face.
+  # The join itself is NEVER slowed down, only the welcome message waits.
+  wait-before-welcome-ms: 1500
+  # How long a face stays cached on disk (plugins/FlareMessages/faces), in hours.
+  # After that it's downloaded again (so skin changes are seen). 0 = never expires
+  cache-hours: 72
+  # Max time for a skin download, in milliseconds
+  timeout-ms: 4000
+  # Where to download the skin when the player's profile has none:
+  #  - premium (online-mode) servers: the skin is always in the profile, this is not used
+  #  - SkinsRestorer: its skin is in the profile too, this is not used
+  #  - offline-mode / cracked servers: the skin is downloaded by NAME from this url
+  # {name} = player name, {uuid} = uuid without dashes
+  fallback:
+    enabled: true
+    url: "https://mc-heads.net/skin/{name}"

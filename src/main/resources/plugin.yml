@@ -1,0 +1,29 @@
+name: FlareMessages
+version: '${project.version}'
+main: dev.tmdevelopment.flaremessages.FlareMessages
+api-version: '1.16'
+author: TMDevelopment
+description: Welcome, first join, join/quit and announcements (chat, action bar, boss bar, title) with hex colors and the skin face in chat.
+softdepend: [PlaceholderAPI, SkinsRestorer]
+# Spigot, Paper and forks (Purpur...) from 1.16.5 to 26.x
+
+commands:
+  fmessages:
+    description: Flare Messages main command
+    usage: /fmessages <help|about|announce|broadcast|preview|face|list|reload>
+    aliases: [fmes, fmessage, messages, message]
+    # staff only: players without these permissions don't even see the command
+    permission: flaremessages.admin;flaremessages.command.version
+
+permissions:
+  flaremessages.admin:
+    description: Every command (reload, list, announce, broadcast, preview, face, about) and update notices
+    default: op
+    children:
+      flaremessages.command.version: true
+  flaremessages.command.version:
+    description: "/fmessages about (also /fmessages version): plugin info and update check"
+    default: op
+  flaremessages.format.vip:
+    description: Uses the "vip" join / quit format of welcome.yml
+    default: false

@@ -1,0 +1,174 @@
+#  Flare Messages · lang/en.yml — answers of the commands
+#  Choose the language in config.yml > language   ·   after editing: /fmessages reload
+#  One line or a list of lines   ·   "" or [] = that answer is not sent
+#  {prefix} = the prefix below   ·   {label} = the command the player wrote (fmessages, fmes, fmessage, messages or message)
+#  Other {placeholders} are filled by the plugin: keep them where they are.
+#
+#  ── Format ──────────────────────────────────────────────
+#  Colors    &a &c &e &f &7 ...   &l bold  &o italic  &n underline
+#  Hex       "&#2F80EDText"   "{#2F80ED}Text"   "<#2F80ED>Text"
+#  Gradient  "<gradient:#2F80ED:#56CCF2>Text</gradient>"   Rainbow "<rainbow>Text</rainbow>"
+#  Click     "<click:run_command:'/fmessages list'>Text</click>"   Hover "<hover:show_text:'Text'>Text</hover>"
+#  Tip       always write texts between "quotes"
+
+lang-version: 1
+
+prefix: "<gradient:#2F80ED:#56CCF2><bold>MESSAGES</bold></gradient> &7» &7"
+
+general:
+  no-permission: "{prefix}&cYou don't have permission to do this. &8(needs &7{permission}&8)"
+  # From the console, commands that show something need a player name
+  console-needs-player: "{prefix}&cFrom the console write the player too: &f/{label} {usage} <player>"
+  player-not-found: "{prefix}&cNo online player called &f{player}&c. &7Write the exact name of an online player."
+  unknown-command: "{prefix}&cUnknown command &f/{label} {sub}&c. &7See all commands: <click:run_command:'/{label} help'><hover:show_text:'&7Click to open the help'>&#56CCF2&n/{label} help</hover></click>"
+
+help:
+  # Only the commands the player can really use are shown.
+  # Click a command = it is written in the chat bar (or run, for the ones without arguments).
+  header:
+    - ""
+    - " <gradient:#2F80ED:#56CCF2><bold>FLARE MESSAGES</bold></gradient> &7v{version}"
+    - ""
+  lines:
+    version: " <click:run_command:'/{label} about'><hover:show_text:'&7Click to open'>&#56CCF2/{label} about</hover></click> &7- plugin info and updates"
+  # Shown only to admins (flaremessages.admin)
+  admin:
+    - " <click:suggest_command:'/{label} announce '><hover:show_text:'&7Sends an announcement to everyone now<newline>&8Click to write it'>&#56CCF2/{label} announce <id|next></hover></click> &7- send an announcement"
+    - " <click:suggest_command:'/{label} broadcast chat '><hover:show_text:'&7Colors and placeholders work<newline>&7Title: &ftitle | subtitle<newline>&8Click to write it'>&#56CCF2/{label} broadcast <type> <text></hover></click> &7- quick message to everyone"
+    - " <click:suggest_command:'/{label} preview welcome'><hover:show_text:'&7Shows a message only to you (or to a player)<newline>&7without running its commands<newline>&8Click to write it'>&#56CCF2/{label} preview <message> [player]</hover></click> &7- test a message"
+    - " <click:run_command:'/{label} list'><hover:show_text:'&7Click to run it'>&#56CCF2/{label} list</hover></click> &7- all the announcements"
+    - " <click:suggest_command:'/{label} face '><hover:show_text:'&7Shows the skin face and where it comes from<newline>&8Click to write it'>&#56CCF2/{label} face [player]</hover></click> &7- check a skin face"
+    - " <click:run_command:'/{label} reload'><hover:show_text:'&7Reloads every file and tells you<newline>&7the line of any mistake<newline>&8Click to run it'>&#56CCF2/{label} reload</hover></click> &7- reload the files"
+  # Last line for admins / for everyone else ("" = nothing)
+  admin-footer: " &7<type> = chat, actionbar, title, bossbar"
+  footer: ""
+
+# /fmessages about (also /fmessages version): plugin info for admins (permission flaremessages.command.version)
+about:
+  header:
+    - ""
+    - " <gradient:#2F80ED:#56CCF2><bold>FLARE MESSAGES</bold></gradient>"
+  checking: " &7Checking for updates..."
+  # first line, depends on the update check
+  latest: " &7Plugin version: &a{version} &8- &alatest version!"
+  outdated: " &7Plugin version: &c{version} &8- &c&lOUTDATED! &7Please update to &#56CCF2{latest} <click:open_url:'{url}'><hover:show_text:'&7Click to open the download page'>&#56CCF2&n[Download]</hover></click>"
+  outdated-console: " &7Plugin version: &c{version} &8- &c&lOUTDATED! &7Please update to &#56CCF2{latest}&7: &f{url}"
+  failed: " &7Plugin version: &f{version} &8- &7could not check for updates right now"
+  check-off: " &7Plugin version: &f{version} &8- &7update check is off"
+  # {minecraft} {server} {java} {textapi} {notifier} {hooks}
+  info:
+    - " &7Server version: &f{minecraft} &8({server})"
+    - " &7Java: &f{java} &8| &7Text API: &f{textapi}"
+    - " &7Update notifier: {notifier}"
+    - " &7Plugin hooks: {hooks}"
+    - " &7Permissions: <click:run_command:'/{label} about permissions'><hover:show_text:'&7Click to see every permission'>&#56CCF2&n[Show list]</hover></click>"
+  notifier-on: "&atrue"
+  notifier-off: "&cfalse"
+  # {hook} = name of the plugin; hooked = installed and in use, missing = not installed
+  hooked: "&a{hook}"
+  missing: "&8{hook}"
+  separator: "&7, "
+  permissions:
+    header:
+      - ""
+      - " <gradient:#2F80ED:#56CCF2><bold>FLARE MESSAGES</bold></gradient> &7permissions"
+    line: " <click:copy_to_clipboard:'{permission}'><hover:show_text:'&7Click to copy'>&#56CCF2{permission}</hover></click> &8- &7{description} &8({default})"
+    # who has it without a permissions plugin
+    everyone: "everyone"
+    op: "op"
+    not-op: "not op"
+    nobody: "nobody"
+
+# New version found (update-check in config.yml). "join" is sent to admins (flaremessages.admin) when they join
+update:
+  console: "{prefix}&7A new version is out: &#56CCF2{latest} &8(&7you have {version}&8)&7. Download: &f{url}"
+  join: "{prefix}&7FlareMessages &#56CCF2{latest} &7is out &8(&7you have {version}&8)&7. <click:open_url:'{url}'><hover:show_text:'&7Click to open the download page'>&#56CCF2&n[Download]</hover></click>"
+
+admin:
+  reloaded:
+    - "{prefix}&aEverything reloaded in &f{ms}ms&a."
+    - " &8» &7Announcements: &f{announcements} &8(&f{rotation} &7automatic, every &f{interval}s&8)"
+    - " &8» &7Join / quit formats: &f{formats} &8· &7PlaceholderAPI: {papi}"
+  papi-on: "&ahooked"
+  papi-off: "&7not installed"
+  # When a file has a mistake (bad indent, missing quote...)
+  reloaded-errors: "{prefix}&#56CCF2Reloaded in &f{ms}ms&#56CCF2, but &f{count} &#56CCF2file(s) have a mistake:"
+  # {problem} = clear explanation below   ·   {details} = original text of the error (hover)
+  reload-error: " &8» &f{file} &7line &f{line}&7: <hover:show_text:'&7Technical details:<newline>&f{details}'>&c{problem}</hover>"
+  reload-problem:
+    tab: "a TAB is used, indent with spaces only"
+    indent: "wrong indentation (spaces), or a missing : after a key"
+    quote: "a \" is missing or there is one too many"
+    other: "the file is not valid YAML (hover for details)"
+  reload-error-hint: " &7Those files use the &fdefault values &7until you fix them. &8Tip: the line may also be the one just above."
+
+  list:
+    header:
+      - ""
+      - " <gradient:#2F80ED:#56CCF2><bold>ANNOUNCEMENTS</bold></gradient> &8({count})"
+      - " &7Automatic: {automatic}"
+      - ""
+    automatic-on: "&aon &8- &7every &f{interval}s&7, {order}&7, with at least &f{min} &7player(s) online"
+    automatic-off: "&coff &8- &7turn it on in config.yml > modules.announcements"
+    automatic-empty: "&#56CCF2on, but no announcement has &fin-rotation: true"
+    order-random: "&frandom order"
+    order-sequential: "&fin order"
+    line: "  <click:run_command:'/{label} preview {id}'><hover:show_text:'&7Click to preview it (only you see it)<newline>&7Send it to everyone: &f/{label} announce {id}'>&8• &f{id}</hover></click> &8- &7{parts} {mode}"
+    mode-auto: "&8(&aautomatic&8)"
+    mode-manual: "&8(&#56CCF2manual only&8)"
+    empty: "  &7No announcements yet. Add them in &fannouncements.yml&7."
+    footer:
+      - ""
+      - " &8Click a name to preview it."
+    parts:
+      chat: "chat"
+      title: "title"
+      actionbar: "action bar"
+      bossbar: "boss bar"
+      sound: "sound"
+      commands: "commands"
+      separator: "&8, &7"
+
+  announced: "{prefix}&aAnnouncement &f{id} &asent to &f{sent} &aplayer(s)."
+  # Shown only when someone didn't receive it (permission / worlds of the announcement)
+  announced-details: " &8» &f{filtered} &7player(s) skipped by permission / world."
+  unknown-announcement:
+    - "{prefix}&cThere is no announcement called &f{id}&c."
+    - " &7Available: &f{list}"
+  no-rotation: "{prefix}&cNo announcement is automatic. &7Set &fin-rotation: true &7in announcements.yml, or send one by name: &f/{label} announce <id>"
+
+  broadcast-sent: "{prefix}&aSent as &f{type} &ato &f{count} &aplayer(s)."
+  nobody-online: "{prefix}&7Nobody is online, nothing was sent."
+
+  preview-sent: "{prefix}&7Preview of &f{id} &7shown to &f{player}&7. &8(its commands are not run)"
+  unknown-message:
+    - "{prefix}&cThere is no message called &f{id}&c."
+    - " &7You can preview: &fwelcome&7, &ffirstjoin&7, &ffirstjoin-broadcast &7or an announcement: &f{list}"
+  message-off: "{prefix}&7The message &f{id} &7is empty or turned off. &8(enabled: false, or every part is \"\")"
+
+  face-shown: "{prefix}&7Skin face of &f{player} &8» &7{source}"
+  face-source:
+    profile: "&askin of the profile &8(premium or SkinsRestorer)"
+    fallback: "&fdownloaded by name from &7{host} &8(offline-mode server)"
+    steve: "&#56CCF2Steve &8- skin not found: check config.yml > face.fallback"
+
+# Shown when a command is written incomplete or wrong. Click = writes it in the chat bar.
+usage:
+  announce:
+    - "{prefix}&7Send an announcement to everyone now:"
+    - " <click:suggest_command:'/{label} announce '>&#56CCF2/{label} announce <id></click> &8- &7a specific one &8(see them with &7/{label} list&8)"
+    - " <click:suggest_command:'/{label} announce next'>&#56CCF2/{label} announce next</click> &8- &7the next one of the automatic rotation"
+  broadcast:
+    - "{prefix}&7Send a quick message to everyone:"
+    - " <click:suggest_command:'/{label} broadcast chat '>&#56CCF2/{label} broadcast chat <text></click> &8- &7in chat"
+    - " <click:suggest_command:'/{label} broadcast actionbar '>&#56CCF2/{label} broadcast actionbar <text></click> &8- &7above the hotbar"
+    - " <click:suggest_command:'/{label} broadcast title '>&#56CCF2/{label} broadcast title <title> | <subtitle></click> &8- &7in the middle of the screen"
+    - " <click:suggest_command:'/{label} broadcast bossbar '>&#56CCF2/{label} broadcast bossbar <text></click> &8- &7bar at the top"
+    - " &8Colors, gradients and placeholders work. Times and colors: config.yml > quick-broadcast"
+  preview:
+    - "{prefix}&7Show a message only to you (or to a player), without running its commands:"
+    - " <click:suggest_command:'/{label} preview welcome'>&#56CCF2/{label} preview welcome</click> &8- &7the welcome"
+    - " <click:suggest_command:'/{label} preview firstjoin'>&#56CCF2/{label} preview firstjoin</click> &8- &7first join, to the new player"
+    - " <click:suggest_command:'/{label} preview firstjoin-broadcast'>&#56CCF2/{label} preview firstjoin-broadcast</click> &8- &7first join, to the others"
+    - " &#56CCF2/{label} preview <announcement> &8- &7one of: &f{list}"
+    - " &8Add a player name at the end to show it to him."

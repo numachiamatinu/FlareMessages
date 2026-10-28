@@ -1,0 +1,110 @@
+#  Flare Messages · announcements.yml — automatic announcements
+#  On / off: config.yml > modules.announcements   ·   after editing: /fmessages reload
+#
+#  Commands
+#    /fmessages list            all announcements, click one to preview it
+#    /fmessages preview <id>    shows it only to you (its commands are not run)
+#    /fmessages announce <id>   sends it to everyone now   ·   /fmessages announce next = next of the rotation
+#    (/fmes, /fmessage, /messages and /message work too · commands are only for staff: flaremessages.admin)
+#  Every player sees the announcements: choose who with permission / worlds below.
+#
+#  ── How an announcement is made ─────────────────────────
+#  The name under "announcements:" is its id (no spaces), e.g. discord, vote, store.
+#  It uses the same keys as the messages in welcome.yml, combine them as you want:
+#    chat: lines: [...]     ·   title: title / subtitle / fade-in / stay / fade-out
+#    actionbar: ""          ·   actionbar-seconds
+#    bossbar: text / color / style / seconds / countdown
+#    sound / sound-volume / sound-pitch   ·   commands: console / player
+#  (chat: face: true works here too: every player sees HIS OWN face)
+#  "" at the start / end of lines = an empty line above / below, so the announcement stays apart
+#
+#  Options of an announcement
+#    enabled: false         turns it off without deleting it
+#    in-rotation: false     never sent automatically, only with /fmessages announce <id> (events, restarts...)
+#    permission: ""         "" = everyone, otherwise only players with this permission see it
+#                           e.g. "group.default" to hide it from staff / VIPs
+#    worlds: []             [] = all worlds, otherwise only players in these worlds
+#                           e.g. ["world", "world_nether"]
+#
+#  Placeholders are filled for EVERY player: "Hi {player}" shows each one his own name.
+#  {player} {displayname} {world} {ping} {level} {online} {max_online} {server_name} {date} {time} {prefix}
+#  + every %placeholder% of PlaceholderAPI
+#
+#  ── Format ──────────────────────────────────────────────
+#  Colors    &a &c &e &f &7 ...   &l bold  &o italic  &n underline  &m strike  &k magic  &r reset
+#  Hex       "&#2F80EDText"   "{#2F80ED}Text"   "<#2F80ED>Text"
+#  Gradient  "<gradient:#2F80ED:#56CCF2>Text</gradient>"   Rainbow "<rainbow>Text</rainbow>"
+#  Click     "<click:run_command:'/spawn'>Text</click>"   "<click:open_url:'https://...'>Text</click>"
+#  Hover     "<hover:show_text:'&7Text when the mouse is on it'>Text</hover>"
+#  Center    "<center>Text"   (at the start of a chat line, centers it)
+#  Tip       always write texts between "quotes", and use spaces (never TAB) to indent
+
+settings:
+  # Seconds between two automatic announcements (min. 5). 180 = every 3 minutes
+  interval-seconds: 180
+  # false = in the order written below   ·   true = random (never the same one twice in a row)
+  random: false
+  # No automatic announcement when fewer players than this are online (0 = always)
+  min-players: 1
+
+announcements:
+  # Chat only, centered, with a clickable link
+  discord:
+    chat:
+      lines:
+        - ""
+        - "<center><gradient:#5865F2:#8EA1E1><bold>DISCORD</bold></gradient>"
+        - "<center>&7Join our community for news and giveaways!"
+        - "<center><click:open_url:'https://discord.gg/your-invite'><hover:show_text:'&7Click to open the invite'>&#8EA1E1&ndiscord.gg/your-invite</hover></click>"
+        - ""
+    sound: "block.note_block.pling"
+    sound-volume: 0.6
+    sound-pitch: 1.5
+
+  # Chat + action bar, with a personal placeholder and a clickable command
+  vote:
+    chat:
+      lines:
+        - ""
+        - "<center><gradient:#F2C94C:#F2994A><bold>VOTE</bold></gradient>"
+        - "<center>&7Hey &f{player}&7, vote for the server and get rewards!"
+        - "<center><click:run_command:'/vote'><hover:show_text:'&7Click to run &f/vote'>&#F2C94C&l[ CLICK TO VOTE ]</hover></click>"
+        - ""
+    actionbar: "<gradient:#F2C94C:#F2994A>Vote with /vote and get rewards!</gradient>"
+    actionbar-seconds: 6
+
+  # Boss bar only
+  store:
+    bossbar:
+      text: "&7Support the server: <gradient:#BB6BD9:#56CCF2><bold>store.your-server.com</bold></gradient>"
+      color: PURPLE
+      style: PROGRESS
+      seconds: 15
+      countdown: true
+
+  # Rainbow tag. permission: "group.default" would show it only to the default group (not to staff / VIPs)
+  tips:
+    permission: ""
+    chat:
+      lines:
+        - ""
+        - "&8[<rainbow>TIP</rainbow>&8] &7Lost? Use <click:run_command:'/spawn'><hover:show_text:'&7Click to go to the spawn'>&f/spawn</hover></click> &7to go back to the spawn at any time."
+        - ""
+
+  # Not automatic: sent by hand with /fmessages announce event
+  event:
+    in-rotation: false
+    title:
+      title: "<gradient:#EB5757:#F2994A><bold>EVENT</bold></gradient>"
+      subtitle: "&7Starting in 5 minutes at &f/warp event"
+      fade-in: 10
+      stay: 60
+      fade-out: 20
+    chat:
+      lines:
+        - ""
+        - "<center><gradient:#EB5757:#F2994A><bold>EVENT</bold></gradient> &7starting soon at &f/warp event"
+        - ""
+    sound: "entity.ender_dragon.growl"
+    sound-volume: 0.4
+    sound-pitch: 1.2

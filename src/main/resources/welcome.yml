@@ -1,0 +1,189 @@
+#  Flare Messages · welcome.yml — join / quit, welcome and first join
+#  Turn parts on / off: config.yml > modules   ·   after editing: /fmessages reload
+#  Test without rejoining: /fmessages preview welcome   /fmessages preview firstjoin   /fmessages preview firstjoin-broadcast
+#
+#  ── How a message is made ───────────────────────────────
+#  The welcome, the first join messages and every announcement use the SAME keys.
+#  Use only the parts you want: a part that is missing, "" or [] is simply not sent.
+#
+#  chat:
+#    lines: [...]        lines sent in chat, one under the other
+#                        "" at the start / end = an empty line above / below the message,
+#                        so it stays apart from the rest of the chat
+#    face: true          puts the player's skin face on the LEFT of the first 8 lines
+#                        (the empty lines at the start / end stay outside the face)
+#    face-gap: "  "      space between the face and the text
+#    clear: 0            empty lines sent before, to "clean" the chat (0 = none)
+#  title:
+#    title: ""           big text in the middle of the screen
+#    subtitle: ""        small text under the title
+#    fade-in / stay / fade-out    times in ticks (20 ticks = 1 second)
+#  actionbar: ""         text above the hotbar
+#  actionbar-seconds: 3  how long it stays (it is re-sent by itself, max 600)
+#  bossbar:
+#    text: ""            text of the bar at the top of the screen
+#    color               PINK BLUE RED GREEN YELLOW PURPLE WHITE
+#    style               PROGRESS  NOTCHED_6  NOTCHED_10  NOTCHED_12  NOTCHED_20
+#    seconds: 5          how long it stays
+#    countdown: true     true = the bar goes down to 0 while it waits
+#  sound: ""             Minecraft sound key, e.g. "entity.player.levelup" "block.note_block.pling"
+#                        full list: https://minecraft.wiki/w/Sounds.json (Java Edition)
+#  sound-volume / sound-pitch    1.0 = normal (pitch 0.5 - 2.0)
+#  commands:
+#    console: [...]      run by the console, no /   e.g. "give {player} bread 16"
+#    player: [...]       run by the player himself, e.g. "spawn"
+#
+#  ── Placeholders ────────────────────────────────────────
+#  Player   {player} {displayname} {uuid} {world} {ping} {level} {health} {gamemode} {x} {y} {z}
+#  Server   {online} {max_online} {server_name} {date} {time} {prefix}
+#  Joins    {join_number} = how many different players joined the server (the new one included)
+#  Face     {face_1} ... {face_8} = one row of the face, to place it where you want
+#           (use them with face: false, otherwise the face is added twice)
+#  PlaceholderAPI   every %placeholder% works too (e.g. %vault_eco_balance%), if PlaceholderAPI is installed
+#
+#  ── Format ──────────────────────────────────────────────
+#  Colors    &a &c &e &f &7 ...   &l bold  &o italic  &n underline  &m strike  &k magic  &r reset
+#  Hex       "&#2F80EDText"   "{#2F80ED}Text"   "<#2F80ED>Text"
+#  Gradient  "<gradient:#2F80ED:#56CCF2>Text</gradient>"   Rainbow "<rainbow>Text</rainbow>"
+#  Click     "<click:run_command:'/spawn'>Text</click>"   "<click:open_url:'https://...'>Text</click>"
+#  Hover     "<hover:show_text:'&7Text when the mouse is on it'>Text</hover>"
+#  Center    "<center>Text"   (at the start of a chat line, centers it)
+#  Tip       always write texts between "quotes", and use spaces (never TAB) to indent
+
+# ──────────────────────────────────────────────────────────
+#  JOIN / QUIT   (the line in chat when someone joins or leaves)
+# ──────────────────────────────────────────────────────────
+join-quit:
+  # Join message used ONLY the very first time a player joins.
+  # "" = on the first join the normal format below is used.
+  first-join: "&8[<gradient:#2F80ED:#56CCF2>NEW</gradient>&8] &f{player} &7joined for the first time! &8(#{join_number})"
+
+  # Click / hover in join and quit messages work on Paper and its forks; on Spigot they are shown
+  # as normal colored text (Bukkit limit). Every other message is clickable everywhere.
+  # Formats: every player gets the format with the HIGHEST priority he has the permission for.
+  # permission: "" = everyone. Add as many as you want (staff, vip, mvp...).
+  # join: "" or quit: "" = no message for players with that format (e.g. hidden staff).
+  formats:
+    vip:
+      permission: "flaremessages.format.vip"
+      priority: 10
+      join: "&8[&a+&8] <gradient:#F2C94C:#F2994A>VIP</gradient> &f{player} &7joined the server"
+      quit: "&8[&c-&8] <gradient:#F2C94C:#F2994A>VIP</gradient> &f{player} &7left the server"
+    default:
+      permission: ""
+      priority: 0
+      join: "&8[&a+&8] &7{player}"
+      quit: "&8[&c-&8] &7{player}"
+
+# ──────────────────────────────────────────────────────────
+#  WELCOME   (private message to the player, on every join)
+# ──────────────────────────────────────────────────────────
+welcome:
+  # false = off (same as config.yml > modules.welcome: false)
+  enabled: true
+  # Wait before sending it, in ticks (20 = 1 second). A small delay makes sure
+  # it's not lost between the messages of other plugins.
+  delay-ticks: 5
+  chat:
+    face: true
+    face-gap: "  "
+    clear: 0
+    lines:
+      - ""
+      - "<gradient:#2F80ED:#56CCF2><bold>{server_name}</bold></gradient>"
+      - "&7Welcome back, &f{player}&7!"
+      - ""
+      - "&7Online: &#56CCF2{online}&8/&7{max_online}"
+      - "&7Your ping: &#56CCF2{ping}ms"
+      - "&7Need help? <click:run_command:'/help'><hover:show_text:'&7Click to run &f/help'>&#56CCF2&n/help</hover></click>"
+      - ""
+      - "&8{date} • {time}"
+      - ""
+  title:
+    title: ""
+    subtitle: ""
+    fade-in: 10
+    stay: 50
+    fade-out: 15
+  actionbar: "&7Have fun on <gradient:#2F80ED:#56CCF2>{server_name}</gradient>&7!"
+  actionbar-seconds: 5
+  bossbar:
+    text: ""
+    color: BLUE
+    style: PROGRESS
+    seconds: 10
+    countdown: true
+  sound: "entity.experience_orb.pickup"
+  sound-volume: 0.6
+  sound-pitch: 1.2
+  commands:
+    console: []
+    player: []
+
+# ──────────────────────────────────────────────────────────
+#  FIRST JOIN   (only the very first time a player joins)
+# ──────────────────────────────────────────────────────────
+first-join:
+  # true  = on the first join ONLY "player" below is sent (no welcome)
+  # false = the new player gets both the welcome and "player"
+  replace-welcome: true
+  delay-ticks: 5
+
+  # Message to the new player
+  player:
+    enabled: true
+    chat:
+      face: true
+      face-gap: "  "
+      lines:
+        - ""
+        - "<gradient:#2F80ED:#56CCF2><bold>WELCOME!</bold></gradient>"
+        - "&7This is your first time here."
+        - ""
+        - "&7Hi &f{player}&7, you are the"
+        - "&7player number &#56CCF2#{join_number}&7!"
+        - "&7Start with <click:run_command:'/help'><hover:show_text:'&7Click to run &f/help'>&#56CCF2&n/help</hover></click>"
+        - ""
+        - "&8Have fun!"
+        - ""
+    title:
+      title: "<gradient:#2F80ED:#56CCF2><bold>WELCOME</bold></gradient>"
+      subtitle: "&7to &f{server_name}"
+      fade-in: 10
+      stay: 70
+      fade-out: 20
+    actionbar: ""
+    bossbar:
+      text: "&7You are player &#56CCF2#{join_number} &7of &f{server_name}"
+      color: BLUE
+      style: NOTCHED_10
+      seconds: 15
+      countdown: true
+    sound: "ui.toast.challenge_complete"
+    sound-volume: 0.7
+    sound-pitch: 1.0
+    # Run ONCE in the life of the player: a starter kit, a rank, money...
+    # Examples: "give {player} bread 16"   "eco give {player} 100"   "lp user {player} parent add default"
+    commands:
+      console: []
+      player: []
+
+  # Message to all the OTHER players when someone joins for the first time
+  # ({player}, the face and every placeholder are about the NEW player)
+  broadcast:
+    enabled: true
+    # true = the new player doesn't receive it (he already gets "player" above)
+    exclude-new-player: true
+    chat:
+      face: true
+      face-gap: "  "
+      lines:
+        - ""
+        - "<gradient:#2F80ED:#56CCF2><bold>NEW PLAYER</bold></gradient>"
+        - "&f{player} &7joined for the"
+        - "&7first time, say hi!"
+        - "&8(player #{join_number})"
+        - ""
+    sound: "block.note_block.pling"
+    sound-volume: 0.5
+    sound-pitch: 1.8

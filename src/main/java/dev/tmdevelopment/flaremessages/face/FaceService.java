@@ -1,5 +1,6 @@
 package dev.tmdevelopment.flaremessages.face;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +76,43 @@ public final class FaceService {
         }
     }
 
+    /** On startup, in the background: deletes the saved faces older than cache-hours (they would be downloaded again anyway). */
+    public void cleanDisk() {
+        final long max = cacheMillis;
+        if (max <= 0) return;
+        pool.execute(() -> {
+            File[] files = dir.listFiles((d, name) -> name.endsWith(".face"));
+            if (files == null) return;
+            long now = System.currentTimeMillis();
+            int removed = 0;
+            for (File f : files) {
+                if (now - f.lastModified() > max && f.delete()) removed++;
+            }
+            if (removed > 0) plugin.getLogger().fine("Removed " + removed + " old skin faces");
+        });
+    }
+
     public void shutdown() {
         pool.shutdownNow();
+    }
+
+    /**
+     * The player left: his face is removed from memory, the copy on disk stays (when he comes back it's read
+     * from there, nothing is downloaded again). Without this the memory grows with every player who ever joined.
+     */
+    public void forget(UUID id) {
+        cache.remove(id);
+        CompletableFuture<Face> running = inflight.get(id);
+        if (running != null) {
+            // still downloading: drop it when done, unless he came back in the meantime
+            running.whenComplete((f, ex) -> {
+                if (plugin.isEnabled()) {
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (Bukkit.getPlayer(id) == null) cache.remove(id);
+                    });
+                }
+            });
+        }
     }
 
     public Face steve() {

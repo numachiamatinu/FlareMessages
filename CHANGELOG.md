@@ -1,5 +1,20 @@
 # Changelog — FlareMessages
 
+## 1.0.1
+Small fix update. Nothing to change in your files: just replace the jar.
+
+### Fixes
+- **First join commands always run.** The starter kit, rank and other first join commands now run right when the
+  new player joins, without waiting for the skin. Before, a player who left in the first 1-2 seconds never got them
+  (when he came back he was not a new player anymore).
+- **No more double boss bars.** Sending the same announcement (or the same quick broadcast) again while its boss bar
+  is still shown now restarts that bar instead of adding a second one.
+- **Less memory on busy servers.** Skin faces are removed from memory when a player leaves. The copy on disk stays,
+  so when he comes back nothing is downloaded again.
+- **Old faces are cleaned up.** On startup the saved faces older than `face.cache-hours` are deleted from the
+  `faces` folder.
+- **`/fmes about` from the console** writes the permission list right away (the console can't click `[Show list]`).
+
 ## 1.0.0
 First release of FlareMessages: welcome messages, join / quit messages and automatic announcements,
 with hex colors, gradients and the player's skin face right in chat.

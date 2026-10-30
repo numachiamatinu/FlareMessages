@@ -1,6 +1,8 @@
 package dev.tmdevelopment.flaremessages.listener;
 
 import dev.tmdevelopment.flaremessages.FlareMessages;
+import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,5 +25,12 @@ public final class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onQuit(PlayerQuitEvent event) {
         this.plugin.welcome().handleQuit(event);
+        // one tick later (other plugins may still use the face in their quit message), if he didn't come back
+        UUID id = event.getPlayer().getUniqueId();
+        Bukkit.getScheduler().runTask(this.plugin, () -> {
+            if (Bukkit.getPlayer(id) == null) {
+                this.plugin.faces().forget(id);
+            }
+        });
     }
 }

@@ -63,6 +63,7 @@ public final class FlareMessages extends JavaPlugin {
         this.messages.load();
         this.faces = new FaceService(this);
         this.faces.reload(this.getConfig());
+        this.faces.cleanDisk();
         this.effects = new ScreenEffects(this);
         this.welcome = new WelcomeService(this);
         this.welcome.load();

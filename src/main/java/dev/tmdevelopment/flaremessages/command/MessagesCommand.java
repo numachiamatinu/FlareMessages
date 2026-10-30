@@ -158,7 +158,7 @@ public final class MessagesCommand implements TabExecutor {
             }
             hooks.append(this.lang().raw(enabled(hook) ? "about.hooked" : "about.missing").replace("{hook}", hook));
         }
-        this.lang().send(sender, "about.info",
+        String[] replacements = {
                 "%label%", label,
                 "%version%", updates.current(),
                 "%minecraft%", Bukkit.getBukkitVersion().split("-")[0],
@@ -166,7 +166,20 @@ public final class MessagesCommand implements TabExecutor {
                 "%java%", UpdateChecker.javaVersion(),
                 "%textapi%", this.plugin.platform().name(),
                 "%notifier%", this.lang().raw(updates.enabled() ? "about.notifier-on" : "about.notifier-off"),
-                "%hooks%", hooks.toString());
+                "%hooks%", hooks.toString()};
+        if (sender instanceof Player) {
+            this.lang().send(sender, "about.info", replacements);
+            return;
+        }
+        // the console can't click [Show list]: the permissions are written right away
+        List<String> lines = new ArrayList<>();
+        for (String line : this.lang().lines("about.info")) {
+            if (!line.contains("about permissions")) {
+                lines.add(line);
+            }
+        }
+        this.lang().sendRaw(sender, lines, replacements);
+        this.permissions(sender);
     }
 
     private static boolean enabled(String name) {
@@ -342,7 +355,7 @@ public final class MessagesCommand implements TabExecutor {
                         titleParts.length > 1 ? this.plugin.messages().parse(titleParts[1].trim(), p) : Component.empty(),
                         fadeIn, stay, fadeOut);
             } else {
-                this.plugin.effects().bossbar(p, this.plugin.platform().legacy(this.plugin.messages().parse(raw, p)),
+                this.plugin.effects().bossbar(p, "broadcast:" + raw, this.plugin.platform().legacy(this.plugin.messages().parse(raw, p)),
                         color, style, bossbarSeconds, true);
             }
         }

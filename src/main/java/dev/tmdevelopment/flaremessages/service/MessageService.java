@@ -286,7 +286,7 @@ public final class MessageService {
             this.plugin.effects().actionbar(target, r.actionbar, b.actionbarSeconds());
         }
         if (r.bossbar != null) {
-            this.plugin.effects().bossbar(target, this.plugin.platform().legacy(r.bossbar), b.bossbarColor(), b.bossbarStyle(),
+            this.plugin.effects().bossbar(target, b, this.plugin.platform().legacy(r.bossbar), b.bossbarColor(), b.bossbarStyle(),
                     b.bossbarSeconds(), b.bossbarCountdown());
         }
         if (b.hasSound()) {
@@ -296,11 +296,16 @@ public final class MessageService {
 
     /** Sends a block to one player, who is also the subject of the placeholders. Runs the commands. */
     public void send(MessageBlock b, Player target, Face face) {
+        this.show(b, target, face);
+        this.runCommands(b, target);
+    }
+
+    /** Like send, without running the commands of the block. */
+    public void show(MessageBlock b, Player target, Face face) {
         if (b == MessageBlock.EMPTY) {
             return;
         }
         this.deliver(this.render(b, target, face), target);
-        this.runCommands(b, target);
     }
 
     /** subject == null on a dynamic block: every target sees its own placeholders (announcements). */

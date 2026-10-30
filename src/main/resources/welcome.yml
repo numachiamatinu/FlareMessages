@@ -162,7 +162,7 @@ first-join:
     sound: "ui.toast.challenge_complete"
     sound-volume: 0.7
     sound-pitch: 1.0
-    # Run ONCE in the life of the player: a starter kit, a rank, money...
+    # Run ONCE in the life of the player, right when he joins: a starter kit, a rank, money...
     # Examples: "give {player} bread 16"   "eco give {player} 100"   "lp user {player} parent add default"
     commands:
       console: []

@@ -51,12 +51,29 @@ public final class ScreenEffects implements Runnable {
         }
     }
 
-    /** @param title text with hex colors (§x format) */
-    public void bossbar(Player player, String title, BarColor color, BarStyle style, int seconds, boolean countdown) {
+    /**
+     * @param key   what the bar comes from (the same announcement, the same quick text): a bar with the same key
+     *              that is still shown is replaced and starts again, so the same message never shows two bars
+     * @param title text with hex colors (§x format)
+     */
+    public void bossbar(Player player, Object key, String title, BarColor color, BarStyle style, int seconds, boolean countdown) {
         List<BarEntry> list = this.bossbars.get(player.getUniqueId());
         if (list == null) {
             list = new ArrayList<>(2);
             this.bossbars.put(player.getUniqueId(), list);
+        }
+        int ticks = Math.max(1, seconds * 20);
+        if (key != null) {
+            for (BarEntry e : list) {
+                if (key.equals(e.key)) {
+                    e.bar.setTitle(title);
+                    e.bar.setColor(color);
+                    e.bar.setStyle(style);
+                    e.bar.setProgress(1.0);
+                    e.restart(ticks, countdown);
+                    return;
+                }
+            }
         }
         int max = this.maxBossbars();
         while (list.size() >= max) {
@@ -65,7 +82,7 @@ public final class ScreenEffects implements Runnable {
         BossBar bar = Bukkit.createBossBar(title, color, style);
         bar.setProgress(1.0);
         bar.addPlayer(player);
-        list.add(new BarEntry(bar, Math.max(1, seconds * 20), countdown));
+        list.add(new BarEntry(key, bar, ticks, countdown));
     }
 
     public void clear(Player player) {
@@ -147,13 +164,19 @@ public final class ScreenEffects implements Runnable {
     }
 
     private static final class BarEntry {
+        final Object key;
         final BossBar bar;
-        final int total;
-        final boolean countdown;
+        int total;
+        boolean countdown;
         int remaining;
 
-        BarEntry(BossBar bar, int total, boolean countdown) {
+        BarEntry(Object key, BossBar bar, int total, boolean countdown) {
+            this.key = key;
             this.bar = bar;
+            this.restart(total, countdown);
+        }
+
+        void restart(int total, boolean countdown) {
             this.total = total;
             this.remaining = total;
             this.countdown = countdown;

@@ -157,6 +157,18 @@ public final class WelcomeService {
         if (!sendWelcome && !sendFirst) {
             return;
         }
+        UUID id = player.getUniqueId();
+        if (sendFirst) {
+            // the commands (starter kit, rank...) run right away and don't wait for the skin:
+            // a new player who leaves while it loads is not new anymore when they come back
+            Bukkit.getScheduler().runTask(this.plugin, () -> {
+                Player p = Bukkit.getPlayer(id);
+                if (p != null) {
+                    m.runCommands(this.firstJoinPlayer, p);
+                    m.runCommands(this.firstJoinBroadcast, p);
+                }
+            });
+        }
         boolean needsFace = sendWelcome && this.welcome.usesFace()
                 || sendFirst && (this.firstJoinPlayer.usesFace() || this.firstJoinBroadcast.usesFace());
         int waitMs = Math.max(0, cfg.getInt("face.wait-before-welcome-ms", 1500));
@@ -169,7 +181,6 @@ public final class WelcomeService {
         } else if (!future.isDone()) {
             future = CompletableFuture.completedFuture(null);
         }
-        UUID id = player.getUniqueId();
         future.whenComplete((face, ex) -> Bukkit.getScheduler().runTask(this.plugin, () -> {
             Player p = Bukkit.getPlayer(id);
             if (p == null) {
@@ -181,14 +192,13 @@ public final class WelcomeService {
             }
             if (sendFirst) {
                 this.later(id, this.firstJoinDelay, target -> {
-                    m.send(this.firstJoinPlayer, target, f);
+                    m.show(this.firstJoinPlayer, target, f);
                     if (this.firstJoinBroadcast != MessageBlock.EMPTY) {
                         List<Player> targets = new ArrayList<>(Bukkit.getOnlinePlayers());
                         if (this.excludeNewPlayer) {
                             targets.remove(target);
                         }
                         m.broadcast(this.firstJoinBroadcast, targets, target, f);
-                        m.runCommands(this.firstJoinBroadcast, target);
                     }
                 });
             }

@@ -19,9 +19,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.MetadataValue;
 
 /** welcome.yml: join / quit messages, welcome on every join, first join (player + broadcast). */
 public final class WelcomeService {
+    public static final String SILENT = "flaremessages.silent";
     private final FlareMessages plugin;
     private final File file;
     private final List<Format> formats = new ArrayList<>();
@@ -112,6 +114,22 @@ public final class WelcomeService {
         return this.plugin.getConfig().getBoolean("modules." + id, true);
     }
 
+    /** No join / quit line: flaremessages.silent, or vanished (EssentialsX, SuperVanish, PremiumVanish...). */
+    public boolean silent(Player player) {
+        if (player.hasPermission(SILENT)) {
+            return true;
+        }
+        if (!this.plugin.getConfig().getBoolean("join-quit.hide-vanished", true)) {
+            return false;
+        }
+        for (MetadataValue value : player.getMetadata("vanished")) {
+            if (value.asBoolean()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Format formatFor(Player player) {
         for (Format f : this.formats) {
             if (f.permission() == null || f.permission().isEmpty() || player.hasPermission(f.permission())) {
@@ -131,7 +149,7 @@ public final class WelcomeService {
         FileConfiguration cfg = this.plugin.getConfig();
 
         if (this.module("join-quit")) {
-            if (cfg.getBoolean("join-quit.hide-join", false)) {
+            if (cfg.getBoolean("join-quit.hide-join", false) || this.silent(player)) {
                 this.plugin.platform().joinMessage(event, null);
             } else {
                 Template msg = null;
@@ -222,7 +240,7 @@ public final class WelcomeService {
     public void handleQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         if (this.module("join-quit")) {
-            if (this.plugin.getConfig().getBoolean("join-quit.hide-quit", false)) {
+            if (this.plugin.getConfig().getBoolean("join-quit.hide-quit", false) || this.silent(player)) {
                 this.plugin.platform().quitMessage(event, null);
             } else {
                 Format f = this.formatFor(player);

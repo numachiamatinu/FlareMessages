@@ -67,6 +67,9 @@ join-quit:
   # true = NO join / quit message at all (not even the Minecraft one). Good for big servers.
   hide-join: false
   hide-quit: false
+  # true = no join / quit message for staff in vanish (EssentialsX, SuperVanish, PremiumVanish...).
+  # Players with the permission flaremessages.silent never have a join / quit message either.
+  hide-vanished: true
 
 # Value of {server_name} in every message
 server-name: "My Server"

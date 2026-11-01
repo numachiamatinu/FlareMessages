@@ -6,7 +6,7 @@
 
     <groupId>dev.tmdevelopment</groupId>
     <artifactId>FlareMessages</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
     <name>FlareMessages</name>
     <description>Welcome, first join, join/quit and announcements with hex colors and the skin face in chat. Spigot and Paper 1.16.5 - 26.x.</description>

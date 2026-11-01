@@ -131,7 +131,47 @@ public final class AnnouncementService {
         if (this.rotation.isEmpty() || Bukkit.getOnlinePlayers().size() < this.minPlayers()) {
             return;
         }
-        this.broadcast(this.next());
+        // an announcement nobody online can see (permission / worlds) doesn't waste the turn: the next one goes
+        if (this.random()) {
+            List<Integer> visible = new ArrayList<>();
+            for (int i = 0; i < this.rotation.size(); ++i) {
+                if (this.seenBySomeone(this.rotation.get(i))) {
+                    visible.add(i);
+                }
+            }
+            if (visible.size() > 1) {
+                visible.remove(Integer.valueOf(this.lastRandom));
+            }
+            if (visible.isEmpty()) {
+                return;
+            }
+            int i = visible.get(ThreadLocalRandom.current().nextInt(visible.size()));
+            this.lastRandom = i;
+            this.broadcast(this.rotation.get(i));
+            return;
+        }
+        for (int tries = 0; tries < this.rotation.size(); ++tries) {
+            Announcement a = this.rotation.get(this.index % this.rotation.size());
+            this.index = (this.index + 1) % this.rotation.size();
+            if (this.seenBySomeone(a)) {
+                this.broadcast(a);
+                return;
+            }
+        }
+    }
+
+    private boolean seenBySomeone(Announcement a) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (this.sees(a, p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean sees(Announcement a, Player p) {
+        return (a.permission().isEmpty() || p.hasPermission(a.permission()))
+                && (a.worlds().isEmpty() || a.worlds().contains(p.getWorld().getName().toLowerCase(Locale.ROOT)));
     }
 
     public Announcement next() {
@@ -171,8 +211,7 @@ public final class AnnouncementService {
         List<Player> targets = new ArrayList<>();
         int filtered = 0;
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!a.permission().isEmpty() && !p.hasPermission(a.permission())
-                    || !a.worlds().isEmpty() && !a.worlds().contains(p.getWorld().getName().toLowerCase(Locale.ROOT))) {
+            if (!this.sees(a, p)) {
                 ++filtered;
                 continue;
             }

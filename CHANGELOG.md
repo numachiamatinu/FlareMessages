@@ -1,5 +1,20 @@
 # Changelog — FlareMessages
 
+## 1.0.2
+**Vanish support, silent join and smarter announcements.** Just replace the jar: the new option is added to
+`config.yml` by itself.
+
+### New
+- **Vanish**: staff in vanish (EssentialsX, SuperVanish, PremiumVanish...) joins and leaves without a join / quit
+  message. On by default, `join-quit.hide-vanished: false` in `config.yml` to turn it off.
+- **Silent join**: players with `flaremessages.silent` join and leave without a join / quit message.
+  Nobody has it by default, not even op. With `*` in your permissions plugin you get it too: set it to `false` for
+  yourself if you want your join message.
+
+### Improved
+- **Announcements**: when nobody online can see the announcement of this turn (its `permission` or `worlds`),
+  the next one is sent instead of skipping the turn. Works in order and with `random: true`.
+
 ## 1.0.1
 Small fix update. Nothing to change in your files: just replace the jar.
 

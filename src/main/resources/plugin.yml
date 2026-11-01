@@ -24,6 +24,9 @@ permissions:
   flaremessages.command.version:
     description: "/fmessages about (also /fmessages version): plugin info and update check"
     default: op
+  flaremessages.silent:
+    description: Joins and leaves without a join / quit message
+    default: false
   flaremessages.format.vip:
     description: Uses the "vip" join / quit format of welcome.yml
     default: false

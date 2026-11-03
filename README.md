@@ -30,7 +30,7 @@ you prepared.
   Works on premium, SkinsRestorer and offline-mode servers. Skins are downloaded in the background and cached
 - **Every message can mix chat, title, action bar, boss bar, sound and commands**
 - **First join**: message to the new player, announcement to the others, commands run once (starter kit, rank...)
-- **Join / quit formats** by permission and priority, or no join / quit message at all
+- **Join / quit formats** by permission and priority, each with its own sound, or no join / quit message at all
 - **Announcements**: in order or random, minimum players online, permission and world filters,
   announcements sent only by hand (`in-rotation: false`) for events and restarts
 - **Quick broadcast**: `/fmes broadcast <chat|actionbar|title|bossbar> <text>`
@@ -78,7 +78,7 @@ Main command `/fmessages`. Also `/fmes`, `/fmessage`, `/messages` and `/message`
 | Command | Description | Permission |
 |---|---|---|
 | `/fmes help` | Commands you can use | `flaremessages.admin` |
-| `/fmes announce <id\|next>` | Send an announcement to everyone now | `flaremessages.admin` |
+| `/fmes announce <id\|next>` | Send an announcement to everyone now (`next` = the next one of the rotation, then its timer starts again) | `flaremessages.admin` |
 | `/fmes broadcast <type> <text>` | Quick message: `chat`, `actionbar`, `title` (`title \| subtitle`), `bossbar` | `flaremessages.admin` |
 | `/fmes preview <message> [player]` | Show `welcome`, `firstjoin`, `firstjoin-broadcast` or an announcement only to you (or a player) | `flaremessages.admin` |
 | `/fmes list` | Every announcement, click one to preview it | `flaremessages.admin` |
@@ -90,18 +90,24 @@ Main command `/fmessages`. Also `/fmes`, `/fmessage`, `/messages` and `/message`
 |---|---|---|
 | `flaremessages.admin` | op | every command and the update message on join |
 | `flaremessages.command.version` | op | `/fmes about` |
+| `flaremessages.staff` | op | counted in `{online_staff}` (give it to helpers and mods) |
+| `flaremessages.silent` | nobody | joins and leaves without a join / quit message |
 | `flaremessages.format.vip` | nobody | uses the `vip` join / quit format of `welcome.yml` (add your own formats) |
 
 ## Placeholders
 
 In the files: `{player}` `{displayname}` `{uuid}` `{world}` `{ping}` `{level}` `{health}` `{gamemode}` `{x}` `{y}` `{z}`
-`{online}` `{max_online}` `{server_name}` `{date}` `{time}` `{prefix}` `{join_number}` `{face_1}` ... `{face_8}`,
+`{online}` `{max_online}` `{online_staff}` `{server_name}` `{date}` `{time}` `{prefix}` `{join_number}`
+`{first_join_date}` `{days_played}` `{face_1}` ... `{face_8}`,
 plus every PlaceholderAPI placeholder.
 
 | PlaceholderAPI | Value |
 |---|---|
 | `%flaremessages_join_number%` | how many different players joined the server |
 | `%flaremessages_face_1%` ... `%flaremessages_face_8%` | one row of the player's skin face |
+| `%flaremessages_online_staff%` | staff online (`flaremessages.staff`), without the ones in vanish |
+| `%flaremessages_first_join_date%` | day of the player's first join |
+| `%flaremessages_days_played%` | full days since the player's first join |
 
 ## Anonymous statistics
 

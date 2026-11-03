@@ -1,5 +1,21 @@
 # Changelog — FlareMessages
 
+## 1.0.3
+**Join sounds, staff counter and first join date.** Just replace the jar: nothing changes in your files.
+
+### New
+- **Sound per join / quit format**: `join-sound` and `quit-sound` under any format of `welcome.yml`
+  (with `sound-volume` and `sound-pitch`), played to everyone online with the message. E.g. a chime when a VIP joins.
+  No message (vanish, `flaremessages.silent`, `join: ""`) = no sound.
+- **Staff online**: `{online_staff}` and `%flaremessages_online_staff%` count the players with the new permission
+  `flaremessages.staff` (op by default), without the ones in vanish. Give it to your helpers and mods.
+- **First join date**: `{first_join_date}` (in your `date-format`) and `{days_played}` (days since the first join),
+  also as `%flaremessages_first_join_date%` and `%flaremessages_days_played%`.
+
+### Improved
+- **`/fmes announce next`** now sends the same announcement the rotation would send (skipping the ones nobody online
+  can see) and starts the timer again, so the next automatic one never comes a few seconds after yours.
+
 ## 1.0.2
 **Vanish support, silent join and smarter announcements.** Just replace the jar: the new option is added to
 `config.yml` by itself.

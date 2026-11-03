@@ -6,6 +6,7 @@ import dev.tmdevelopment.flaremessages.message.MessageBlock;
 import dev.tmdevelopment.flaremessages.message.Template;
 import dev.tmdevelopment.flaremessages.util.Center;
 import dev.tmdevelopment.flaremessages.util.Text;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +19,7 @@ import dev.tmdevelopment.flaremessages.libs.kyori.adventure.text.Component;
 import dev.tmdevelopment.flaremessages.platform.Compat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -164,6 +166,8 @@ public final class MessageService {
                 return this.timeFormat.format(ZonedDateTime.now(this.zone));
             case "prefix":
                 return this.plugin.lang().prefix();
+            case "online_staff":
+                return String.valueOf(this.plugin.welcome().onlineStaff());
             default:
                 break;
         }
@@ -191,6 +195,10 @@ public final class MessageService {
                 return String.valueOf((int) Math.ceil(p.getHealth()));
             case "gamemode":
                 return p.getGameMode().name().toLowerCase(Locale.ROOT);
+            case "first_join_date":
+                return this.firstJoinDate(p);
+            case "days_played":
+                return String.valueOf(daysPlayed(p));
             case "x":
             case "y":
             case "z": {
@@ -200,6 +208,22 @@ public final class MessageService {
             default:
                 return null;
         }
+    }
+
+    /** First time on the server, in milliseconds (a brand new player may still have 0 here: then it is now). */
+    private static long firstPlayed(OfflinePlayer p) {
+        long first = p.getFirstPlayed();
+        return first > 0 ? first : System.currentTimeMillis();
+    }
+
+    /** {first_join_date}: day of the first join, in the date-format / timezone of config.yml. */
+    public String firstJoinDate(OfflinePlayer p) {
+        return this.dateFormat.format(Instant.ofEpochMilli(firstPlayed(p)).atZone(this.zone));
+    }
+
+    /** {days_played}: full days since the first join (0 on the first day). */
+    public static long daysPlayed(OfflinePlayer p) {
+        return Math.max(0L, (System.currentTimeMillis() - firstPlayed(p)) / 86_400_000L);
     }
 
     // ------------------------------------------------------------------ delivery

@@ -306,7 +306,11 @@ public final class MessagesCommand implements TabExecutor {
                 this.lang().send(sender, "admin.no-rotation", "%label%", label);
                 return;
             }
-            a = ann.next();
+            // same choice as the automatic rotation, then the timer starts again from now
+            a = ann.pick();
+            if (a == null) {
+                a = ann.next();
+            }
         } else {
             a = ann.get(args[1]);
             if (a == null) {
@@ -315,6 +319,9 @@ public final class MessagesCommand implements TabExecutor {
             }
         }
         AnnouncementService.Result r = ann.broadcast(a);
+        if (args[1].equalsIgnoreCase("next")) {
+            ann.restart();
+        }
         this.lang().send(sender, "admin.announced", "%id%", a.id(), "%sent%", String.valueOf(r.sent()));
         if (r.filtered() > 0) {
             this.lang().send(sender, "admin.announced-details", "%filtered%", String.valueOf(r.filtered()));

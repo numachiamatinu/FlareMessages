@@ -36,7 +36,9 @@
 #  ── Placeholders ────────────────────────────────────────
 #  Player   {player} {displayname} {uuid} {world} {ping} {level} {health} {gamemode} {x} {y} {z}
 #  Server   {online} {max_online} {server_name} {date} {time} {prefix}
+#           {online_staff} = staff online (permission flaremessages.staff), players in vanish not counted
 #  Joins    {join_number} = how many different players joined the server (the new one included)
+#           {first_join_date} = day of the player's first join   {days_played} = days since then (0 = today)
 #  Face     {face_1} ... {face_8} = one row of the face, to place it where you want
 #           (use them with face: false, otherwise the face is added twice)
 #  PlaceholderAPI   every %placeholder% works too (e.g. %vault_eco_balance%), if PlaceholderAPI is installed
@@ -63,17 +65,25 @@ join-quit:
   # Formats: every player gets the format with the HIGHEST priority he has the permission for.
   # permission: "" = everyone. Add as many as you want (staff, vip, mvp...).
   # join: "" or quit: "" = no message for players with that format (e.g. hidden staff).
+  # join-sound / quit-sound: played to everyone online with the message ("" = no sound),
+  # same sound keys as everywhere else. sound-volume / sound-pitch: 1.0 = normal.
   formats:
     vip:
       permission: "flaremessages.format.vip"
       priority: 10
       join: "&8[&a+&8] <gradient:#F2C94C:#F2994A>VIP</gradient> &f{player} &7joined the server"
       quit: "&8[&c-&8] <gradient:#F2C94C:#F2994A>VIP</gradient> &f{player} &7left the server"
+      join-sound: "block.note_block.chime"
+      quit-sound: ""
+      sound-volume: 0.6
+      sound-pitch: 1.4
     default:
       permission: ""
       priority: 0
       join: "&8[&a+&8] &7{player}"
       quit: "&8[&c-&8] &7{player}"
+      join-sound: ""
+      quit-sound: ""
 
 # ──────────────────────────────────────────────────────────
 #  WELCOME   (private message to the player, on every join)

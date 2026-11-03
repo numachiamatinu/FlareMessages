@@ -24,6 +24,7 @@ import org.bukkit.metadata.MetadataValue;
 /** welcome.yml: join / quit messages, welcome on every join, first join (player + broadcast). */
 public final class WelcomeService {
     public static final String SILENT = "flaremessages.silent";
+    public static final String STAFF = "flaremessages.staff";
     private final FlareMessages plugin;
     private final File file;
     private final List<Format> formats = new ArrayList<>();
@@ -47,13 +48,22 @@ public final class WelcomeService {
         private final int priority;
         private final Template join;
         private final Template quit;
+        private final String joinSound;
+        private final String quitSound;
+        private final float volume;
+        private final float pitch;
 
-        Format(String id, String permission, int priority, Template join, Template quit) {
+        Format(String id, String permission, int priority, Template join, Template quit,
+               String joinSound, String quitSound, float volume, float pitch) {
             this.id = id;
             this.permission = permission;
             this.priority = priority;
             this.join = join;
             this.quit = quit;
+            this.joinSound = joinSound == null ? "" : joinSound.trim();
+            this.quitSound = quitSound == null ? "" : quitSound.trim();
+            this.volume = volume;
+            this.pitch = pitch;
         }
 
         public String id() {
@@ -94,7 +104,9 @@ public final class WelcomeService {
                     continue;
                 }
                 this.formats.add(new Format(id, f.getString("permission", ""), f.getInt("priority", 0),
-                        m.compile(f.getString("join", "")), m.compile(f.getString("quit", ""))));
+                        m.compile(f.getString("join", "")), m.compile(f.getString("quit", "")),
+                        f.getString("join-sound", ""), f.getString("quit-sound", ""),
+                        (float) f.getDouble("sound-volume", 1.0), (float) f.getDouble("sound-pitch", 1.0)));
             }
         }
         this.formats.sort(Comparator.comparingInt(Format::priority).reversed());
@@ -119,15 +131,40 @@ public final class WelcomeService {
         if (player.hasPermission(SILENT)) {
             return true;
         }
-        if (!this.plugin.getConfig().getBoolean("join-quit.hide-vanished", true)) {
-            return false;
-        }
+        return this.plugin.getConfig().getBoolean("join-quit.hide-vanished", true) && vanished(player);
+    }
+
+    /** Vanish of EssentialsX, SuperVanish, PremiumVanish... (they all set the "vanished" metadata). */
+    public static boolean vanished(Player player) {
         for (MetadataValue value : player.getMetadata("vanished")) {
             if (value.asBoolean()) {
                 return true;
             }
         }
         return false;
+    }
+
+    /** {online_staff}: players with flaremessages.staff online, not counting the ones in vanish. */
+    public int onlineStaff() {
+        int n = 0;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.hasPermission(STAFF) && !vanished(p)) {
+                ++n;
+            }
+        }
+        return n;
+    }
+
+    /** Sound of the join / quit format, to everyone online except {@code except} (null = everyone). */
+    private void formatSound(String sound, Format f, Player except) {
+        if (sound.isEmpty()) {
+            return;
+        }
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p != except) {
+                this.plugin.messages().playSound(p, sound, f.volume, f.pitch);
+            }
+        }
     }
 
     public Format formatFor(Player player) {
@@ -153,17 +190,18 @@ public final class WelcomeService {
                 this.plugin.platform().joinMessage(event, null);
             } else {
                 Template msg = null;
+                Format f = this.formatFor(player);
                 if (first && !this.firstJoinMessage.isEmpty()) {
                     msg = this.firstJoinMessage;
-                } else {
-                    Format f = this.formatFor(player);
-                    if (f != null) {
-                        msg = f.join();
-                    }
+                } else if (f != null) {
+                    msg = f.join();
                 }
                 if (msg != null) {
                     this.plugin.platform().joinMessage(event,
                             msg.isEmpty() ? null : m.render(msg, player, this.plugin.faces().cached(player.getUniqueId())));
+                    if (!msg.isEmpty() && f != null) {
+                        this.formatSound(f.joinSound, f, null);
+                    }
                 }
             }
         }
@@ -247,6 +285,9 @@ public final class WelcomeService {
                 if (f != null) {
                     this.plugin.platform().quitMessage(event, f.quit().isEmpty() ? null
                             : this.plugin.messages().render(f.quit(), player, this.plugin.faces().cached(player.getUniqueId())));
+                    if (!f.quit().isEmpty()) {
+                        this.formatSound(f.quitSound, f, player);
+                    }
                 }
             }
         }

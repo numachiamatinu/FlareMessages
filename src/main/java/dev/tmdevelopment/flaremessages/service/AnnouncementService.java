@@ -131,7 +131,20 @@ public final class AnnouncementService {
         if (this.rotation.isEmpty() || Bukkit.getOnlinePlayers().size() < this.minPlayers()) {
             return;
         }
-        // an announcement nobody online can see (permission / worlds) doesn't waste the turn: the next one goes
+        Announcement a = this.pick();
+        if (a != null) {
+            this.broadcast(a);
+        }
+    }
+
+    /**
+     * Next announcement of the rotation that someone online can see (permission / worlds), null if none:
+     * an announcement nobody can see doesn't waste the turn.
+     */
+    public Announcement pick() {
+        if (this.rotation.isEmpty()) {
+            return null;
+        }
         if (this.random()) {
             List<Integer> visible = new ArrayList<>();
             for (int i = 0; i < this.rotation.size(); ++i) {
@@ -143,21 +156,20 @@ public final class AnnouncementService {
                 visible.remove(Integer.valueOf(this.lastRandom));
             }
             if (visible.isEmpty()) {
-                return;
+                return null;
             }
             int i = visible.get(ThreadLocalRandom.current().nextInt(visible.size()));
             this.lastRandom = i;
-            this.broadcast(this.rotation.get(i));
-            return;
+            return this.rotation.get(i);
         }
         for (int tries = 0; tries < this.rotation.size(); ++tries) {
             Announcement a = this.rotation.get(this.index % this.rotation.size());
             this.index = (this.index + 1) % this.rotation.size();
             if (this.seenBySomeone(a)) {
-                this.broadcast(a);
-                return;
+                return a;
             }
         }
+        return null;
     }
 
     private boolean seenBySomeone(Announcement a) {

@@ -27,7 +27,8 @@
 #                           e.g. ["world", "world_nether"]
 #
 #  Placeholders are filled for EVERY player: "Hi {player}" shows each one his own name.
-#  {player} {displayname} {world} {ping} {level} {online} {max_online} {server_name} {date} {time} {prefix}
+#  {player} {displayname} {world} {ping} {level} {online} {max_online} {online_staff} {server_name} {date} {time} {prefix}
+#  {first_join_date} {days_played}
 #  + every %placeholder% of PlaceholderAPI
 #
 #  ── Format ──────────────────────────────────────────────

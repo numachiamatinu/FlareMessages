@@ -21,8 +21,12 @@ permissions:
     default: op
     children:
       flaremessages.command.version: true
+      flaremessages.staff: true
   flaremessages.command.version:
     description: "/fmessages about (also /fmessages version): plugin info and update check"
+    default: op
+  flaremessages.staff:
+    description: Counted in {online_staff} / %flaremessages_online_staff% (give it to your helpers and mods)
     default: op
   flaremessages.silent:
     description: Joins and leaves without a join / quit message

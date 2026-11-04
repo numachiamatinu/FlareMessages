@@ -11,7 +11,7 @@
 #  Click     "<click:run_command:'/fmessages list'>Text</click>"   Hover "<hover:show_text:'Text'>Text</hover>"
 #  Tip       always write texts between "quotes"
 
-lang-version: 1
+lang-version: 2
 
 prefix: "<gradient:#2F80ED:#56CCF2><bold>MESSAGES</bold></gradient> &7» &7"
 
@@ -143,7 +143,7 @@ admin:
   preview-sent: "{prefix}&7Preview of &f{id} &7shown to &f{player}&7. &8(its commands are not run)"
   unknown-message:
     - "{prefix}&cThere is no message called &f{id}&c."
-    - " &7You can preview: &fwelcome&7, &ffirstjoin&7, &ffirstjoin-broadcast &7or an announcement: &f{list}"
+    - " &7You can preview: &fwelcome&7, &ffirstjoin&7, &ffirstjoin-broadcast&7, &fjoin&7, &fquit&7, &fmilestone &7or an announcement: &f{list}"
   message-off: "{prefix}&7The message &f{id} &7is empty or turned off. &8(enabled: false, or every part is \"\")"
 
   face-shown: "{prefix}&7Skin face of &f{player} &8» &7{source}"
@@ -170,5 +170,7 @@ usage:
     - " <click:suggest_command:'/{label} preview welcome'>&#56CCF2/{label} preview welcome</click> &8- &7the welcome"
     - " <click:suggest_command:'/{label} preview firstjoin'>&#56CCF2/{label} preview firstjoin</click> &8- &7first join, to the new player"
     - " <click:suggest_command:'/{label} preview firstjoin-broadcast'>&#56CCF2/{label} preview firstjoin-broadcast</click> &8- &7first join, to the others"
+    - " <click:suggest_command:'/{label} preview join'>&#56CCF2/{label} preview join</click> &8/ <click:suggest_command:'/{label} preview quit'>&#56CCF2quit</click> &8- &7your join / quit line and its sound"
+    - " <click:suggest_command:'/{label} preview milestone'>&#56CCF2/{label} preview milestone</click> &8- &7the join milestone message"
     - " &#56CCF2/{label} preview <announcement> &8- &7one of: &f{list}"
     - " &8Add a player name at the end to show it to him."

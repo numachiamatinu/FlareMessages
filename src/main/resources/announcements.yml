@@ -25,6 +25,9 @@
 #                           e.g. "group.default" to hide it from staff / VIPs
 #    worlds: []             [] = all worlds, otherwise only players in these worlds
 #                           e.g. ["world", "world_nether"]
+#    min-players: 0         the rotation sends it only with at least this many players online (0 = no limit)
+#    max-players: 0         ... and at most this many (0 = no limit), e.g. an "invite your friends" when few are online
+#                           (settings.min-players still counts for every announcement · /announce <id> ignores both)
 #
 #  Placeholders are filled for EVERY player: "Hi {player}" shows each one his own name.
 #  {player} {displayname} {world} {ping} {level} {online} {max_online} {online_staff} {server_name} {date} {time} {prefix}
@@ -57,7 +60,10 @@ announcements:
         - "<center><gradient:#5865F2:#8EA1E1><bold>DISCORD</bold></gradient>"
         - "<center>&7Join our community for news and giveaways!"
         - "<center><click:open_url:'https://discord.gg/your-invite'><hover:show_text:'&7Click to open the invite'>&#8EA1E1&ndiscord.gg/your-invite</hover></click>"
+        - "<center>&8Few players online? Invite your friends!"
         - ""
+    # only while 10 players or fewer are online
+    max-players: 10
     sound: "block.note_block.pling"
     sound-volume: 0.6
     sound-pitch: 1.5

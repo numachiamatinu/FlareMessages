@@ -29,6 +29,8 @@ import org.bukkit.entity.Player;
  */
 public final class MessageService {
     private static final String CENTER_TAG = "<center>";
+    /** {join_number} of the new player while his first join / milestone messages are rendered (0 = the counter). */
+    private int joinNumber = 0;
     private final FlareMessages plugin;
     private String serverName = "Server";
     private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -159,7 +161,7 @@ public final class MessageService {
                 return this.serverName;
             case "join_number":
             case "unique_joins":
-                return String.valueOf(this.plugin.data().uniqueJoins());
+                return String.valueOf(this.joinNumber > 0 ? this.joinNumber : this.plugin.data().uniqueJoins());
             case "date":
                 return this.dateFormat.format(ZonedDateTime.now(this.zone));
             case "time":
@@ -224,6 +226,21 @@ public final class MessageService {
     /** {days_played}: full days since the first join (0 on the first day). */
     public static long daysPlayed(OfflinePlayer p) {
         return Math.max(0L, (System.currentTimeMillis() - firstPlayed(p)) / 86_400_000L);
+    }
+
+    /**
+     * Runs {@code action} (main thread, rendering right away) with {join_number} fixed to {@code number}:
+     * a message sent a few seconds after the join still shows the number of that player, even if
+     * other new players joined in the meantime.
+     */
+    public void withJoinNumber(int number, Runnable action) {
+        int before = this.joinNumber;
+        this.joinNumber = number;
+        try {
+            action.run();
+        } finally {
+            this.joinNumber = before;
+        }
     }
 
     // ------------------------------------------------------------------ delivery

@@ -30,8 +30,9 @@ you prepared.
   Works on premium, SkinsRestorer and offline-mode servers. Skins are downloaded in the background and cached
 - **Every message can mix chat, title, action bar, boss bar, sound and commands**
 - **First join**: message to the new player, announcement to the others, commands run once (starter kit, rank...)
+- **Join milestones**: a message to everyone when a new player is #100, #500, #1000... with a prize if you want
 - **Join / quit formats** by permission and priority, each with its own sound, or no join / quit message at all
-- **Announcements**: in order or random, minimum players online, permission and world filters,
+- **Announcements**: in order or random, minimum / maximum players online (also per announcement), permission and world filters,
   announcements sent only by hand (`in-rotation: false`) for events and restarts
 - **Quick broadcast**: `/fmes broadcast <chat|actionbar|title|bossbar> <text>`
 - **Preview** any message only to you, without running its commands
@@ -80,7 +81,7 @@ Main command `/fmessages`. Also `/fmes`, `/fmessage`, `/messages` and `/message`
 | `/fmes help` | Commands you can use | `flaremessages.admin` |
 | `/fmes announce <id\|next>` | Send an announcement to everyone now (`next` = the next one of the rotation, then its timer starts again) | `flaremessages.admin` |
 | `/fmes broadcast <type> <text>` | Quick message: `chat`, `actionbar`, `title` (`title \| subtitle`), `bossbar` | `flaremessages.admin` |
-| `/fmes preview <message> [player]` | Show `welcome`, `firstjoin`, `firstjoin-broadcast` or an announcement only to you (or a player) | `flaremessages.admin` |
+| `/fmes preview <message> [player]` | Show `welcome`, `firstjoin`, `firstjoin-broadcast`, `join`, `quit`, `milestone` or an announcement only to you (or a player) | `flaremessages.admin` |
 | `/fmes list` | Every announcement, click one to preview it | `flaremessages.admin` |
 | `/fmes face [player]` | Show a skin face and where it comes from | `flaremessages.admin` |
 | `/fmes reload` | Reload every file, with the line of any mistake | `flaremessages.admin` |

@@ -30,7 +30,7 @@ public final class MessagesCommand implements TabExecutor {
     private static final String ADMIN = "flaremessages.admin";
     private static final String VERSION = "flaremessages.command.version";
     private static final List<String> BROADCAST_TYPES = Arrays.asList("chat", "actionbar", "title", "bossbar");
-    private static final List<String> PREVIEW_TYPES = Arrays.asList("welcome", "firstjoin", "firstjoin-broadcast");
+    private static final List<String> PREVIEW_TYPES = Arrays.asList("welcome", "firstjoin", "firstjoin-broadcast", "join", "quit", "milestone");
     private final FlareMessages plugin;
 
     public MessagesCommand(FlareMessages plugin) {
@@ -382,6 +382,14 @@ public final class MessagesCommand implements TabExecutor {
             return;
         }
         String id = args[1].toLowerCase(Locale.ROOT);
+        if (id.equals("join") || id.equals("quit")) {
+            if (this.plugin.welcome().previewJoinQuit(target, id.equals("join"))) {
+                this.lang().send(sender, "admin.preview-sent", "%id%", id, "%player%", target.getName());
+            } else {
+                this.lang().send(sender, "admin.message-off", "%id%", id);
+            }
+            return;
+        }
         MessageBlock block;
         if (id.equals("welcome")) {
             block = this.plugin.welcome().welcome();
@@ -389,6 +397,8 @@ public final class MessagesCommand implements TabExecutor {
             block = this.plugin.welcome().firstJoinPlayer();
         } else if (id.equals("firstjoin-broadcast")) {
             block = this.plugin.welcome().firstJoinBroadcast();
+        } else if (id.equals("milestone")) {
+            block = this.plugin.welcome().milestone();
         } else {
             AnnouncementService.Announcement a = this.plugin.announcements().get(id);
             if (a == null) {

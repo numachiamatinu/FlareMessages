@@ -41,13 +41,23 @@ public final class AnnouncementService {
         private final String permission;
         private final Set<String> worlds;
         private final boolean inRotation;
+        private final int minPlayers;
+        private final int maxPlayers;
 
-        Announcement(String id, MessageBlock block, String permission, Set<String> worlds, boolean inRotation) {
+        Announcement(String id, MessageBlock block, String permission, Set<String> worlds, boolean inRotation,
+                     int minPlayers, int maxPlayers) {
             this.id = id;
             this.block = block;
             this.permission = permission;
             this.worlds = worlds;
             this.inRotation = inRotation;
+            this.minPlayers = minPlayers;
+            this.maxPlayers = maxPlayers;
+        }
+
+        /** min-players / max-players of this announcement (0 = no limit), only for the automatic rotation. */
+        public boolean fits(int online) {
+            return online >= this.minPlayers && (this.maxPlayers <= 0 || online <= this.maxPlayers);
         }
 
         public String id() {
@@ -97,7 +107,8 @@ public final class AnnouncementService {
                 for (String w : s.getStringList("worlds")) {
                     worlds.add(w.toLowerCase(Locale.ROOT));
                 }
-                Announcement a = new Announcement(id, block, s.getString("permission", ""), worlds, s.getBoolean("in-rotation", true));
+                Announcement a = new Announcement(id, block, s.getString("permission", ""), worlds, s.getBoolean("in-rotation", true),
+                        Math.max(0, s.getInt("min-players", 0)), Math.max(0, s.getInt("max-players", 0)));
                 this.announcements.put(id.toLowerCase(Locale.ROOT), a);
                 if (a.inRotation()) {
                     this.rotation.add(a);
@@ -173,6 +184,9 @@ public final class AnnouncementService {
     }
 
     private boolean seenBySomeone(Announcement a) {
+        if (!a.fits(Bukkit.getOnlinePlayers().size())) {
+            return false;
+        }
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (this.sees(a, p)) {
                 return true;

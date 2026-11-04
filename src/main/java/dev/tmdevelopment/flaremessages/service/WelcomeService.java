@@ -9,7 +9,9 @@ import dev.tmdevelopment.flaremessages.util.Yaml;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
@@ -36,6 +38,10 @@ public final class WelcomeService {
     private boolean replaceWelcome = true;
     private boolean excludeNewPlayer = true;
     private int firstJoinDelay = 5;
+    private MessageBlock milestone = MessageBlock.EMPTY;
+    private final Set<Integer> milestoneNumbers = new HashSet<>();
+    private int milestoneEvery = 0;
+    private int milestoneDelay = 40;
 
     public WelcomeService(FlareMessages plugin) {
         this.plugin = plugin;
@@ -120,6 +126,25 @@ public final class WelcomeService {
         this.firstJoinPlayer = MessageBlock.load(yml.getConfigurationSection("first-join.player"), m);
         this.firstJoinBroadcast = MessageBlock.load(yml.getConfigurationSection("first-join.broadcast"), m);
         this.excludeNewPlayer = yml.getBoolean("first-join.broadcast.exclude-new-player", true);
+
+        this.milestoneNumbers.clear();
+        this.milestone = MessageBlock.EMPTY;
+        if (yml.getBoolean("milestones.enabled", false)) {
+            this.milestone = MessageBlock.load(yml.getConfigurationSection("milestones.broadcast"), m);
+            for (Integer n : yml.getIntegerList("milestones.numbers")) {
+                if (n != null && n > 0) {
+                    this.milestoneNumbers.add(n);
+                }
+            }
+            this.milestoneEvery = Math.max(0, yml.getInt("milestones.every", 0));
+            this.milestoneDelay = Math.max(0, yml.getInt("milestones.delay-ticks", 40));
+        }
+    }
+
+    /** Join number that gets the milestone message (numbers list or every N). */
+    public boolean isMilestone(int number) {
+        return this.milestone != MessageBlock.EMPTY && number > 0
+                && (this.milestoneNumbers.contains(number) || this.milestoneEvery > 0 && number % this.milestoneEvery == 0);
     }
 
     private boolean module(String id) {
@@ -179,9 +204,8 @@ public final class WelcomeService {
     public void handleJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         boolean first = !player.hasPlayedBefore();
-        if (first) {
-            this.plugin.data().incrementUniqueJoins();
-        }
+        int number = first ? this.plugin.data().incrementUniqueJoins() : 0;
+        boolean sendMilestone = first && this.isMilestone(number);
         MessageService m = this.plugin.messages();
         FileConfiguration cfg = this.plugin.getConfig();
 
@@ -210,23 +234,32 @@ public final class WelcomeService {
         boolean sendFirst = first && this.module("first-join")
                 && (this.firstJoinPlayer != MessageBlock.EMPTY || this.firstJoinBroadcast != MessageBlock.EMPTY);
         CompletableFuture<Face> future = this.plugin.faces().request(player);
-        if (!sendWelcome && !sendFirst) {
+        if (!sendWelcome && !sendFirst && !sendMilestone) {
             return;
         }
         UUID id = player.getUniqueId();
-        if (sendFirst) {
-            // the commands (starter kit, rank...) run right away and don't wait for the skin:
+        MessageBlock milestoneBlock = this.milestone;
+        if (sendFirst || sendMilestone) {
+            // the commands (starter kit, rank, milestone prize...) run right away and don't wait for the skin:
             // a new player who leaves while it loads is not new anymore when they come back
             Bukkit.getScheduler().runTask(this.plugin, () -> {
                 Player p = Bukkit.getPlayer(id);
                 if (p != null) {
-                    m.runCommands(this.firstJoinPlayer, p);
-                    m.runCommands(this.firstJoinBroadcast, p);
+                    m.withJoinNumber(number, () -> {
+                        if (sendFirst) {
+                            m.runCommands(this.firstJoinPlayer, p);
+                            m.runCommands(this.firstJoinBroadcast, p);
+                        }
+                        if (sendMilestone) {
+                            m.runCommands(milestoneBlock, p);
+                        }
+                    });
                 }
             });
         }
         boolean needsFace = sendWelcome && this.welcome.usesFace()
-                || sendFirst && (this.firstJoinPlayer.usesFace() || this.firstJoinBroadcast.usesFace());
+                || sendFirst && (this.firstJoinPlayer.usesFace() || this.firstJoinBroadcast.usesFace())
+                || sendMilestone && milestoneBlock.usesFace();
         int waitMs = Math.max(0, cfg.getInt("face.wait-before-welcome-ms", 1500));
         if (needsFace && !future.isDone() && waitMs > 0) {
             // wait for the skin at most waitMs, then Steve: the join is never slowed down
@@ -247,7 +280,7 @@ public final class WelcomeService {
                 this.later(id, this.welcomeDelay, target -> m.send(this.welcome, target, f));
             }
             if (sendFirst) {
-                this.later(id, this.firstJoinDelay, target -> {
+                this.later(id, this.firstJoinDelay, target -> m.withJoinNumber(number, () -> {
                     m.show(this.firstJoinPlayer, target, f);
                     if (this.firstJoinBroadcast != MessageBlock.EMPTY) {
                         List<Player> targets = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -256,7 +289,11 @@ public final class WelcomeService {
                         }
                         m.broadcast(this.firstJoinBroadcast, targets, target, f);
                     }
-                });
+                }));
+            }
+            if (sendMilestone) {
+                this.later(id, this.milestoneDelay,
+                        target -> m.withJoinNumber(number, () -> m.broadcast(milestoneBlock, Bukkit.getOnlinePlayers(), target, f)));
             }
         }));
     }
@@ -292,6 +329,22 @@ public final class WelcomeService {
             }
         }
         this.plugin.effects().clear(player);
+    }
+
+    /** /fmes preview join|quit: the line (and sound) of the player's format, shown only to him. */
+    public boolean previewJoinQuit(Player player, boolean join) {
+        Format f = this.formatFor(player);
+        Template t = f == null ? null : join ? f.join() : f.quit();
+        if (t == null || t.isEmpty()) {
+            return false;
+        }
+        this.plugin.platform().send(player, this.plugin.messages().render(t, player, this.plugin.faces().cachedOrSteve(player)));
+        this.plugin.messages().playSound(player, join ? f.joinSound : f.quitSound, f.volume, f.pitch);
+        return true;
+    }
+
+    public MessageBlock milestone() {
+        return this.milestone;
     }
 
     public MessageBlock welcome() {

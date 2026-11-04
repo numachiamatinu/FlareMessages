@@ -1,6 +1,7 @@
 #  Flare Messages · welcome.yml — join / quit, welcome and first join
 #  Turn parts on / off: config.yml > modules   ·   after editing: /fmessages reload
 #  Test without rejoining: /fmessages preview welcome   /fmessages preview firstjoin   /fmessages preview firstjoin-broadcast
+#                          /fmessages preview join   /fmessages preview quit   /fmessages preview milestone
 #
 #  ── How a message is made ───────────────────────────────
 #  The welcome, the first join messages and every announcement use the SAME keys.
@@ -197,3 +198,40 @@ first-join:
     sound: "block.note_block.pling"
     sound-volume: 0.5
     sound-pitch: 1.8
+
+# ──────────────────────────────────────────────────────────
+#  JOIN MILESTONES   (to everyone, when a new player is #100, #500...)
+# ──────────────────────────────────────────────────────────
+milestones:
+  enabled: true
+  # join numbers ({join_number}) that get the message
+  numbers: [100, 250, 500, 1000, 2500, 5000, 10000]
+  # also every N new players (0 = off), e.g. 1000 = #1000, #2000, #3000...
+  every: 0
+  # wait after the join, in ticks (40 = 2 seconds, after the first join messages)
+  delay-ticks: 40
+  # Same keys as every message. {player}, the face and every placeholder are about the NEW player.
+  # The commands run once, right when he joins: a prize for player #1000...
+  broadcast:
+    chat:
+      face: true
+      face-gap: "  "
+      lines:
+        - ""
+        - "<gradient:#2F80ED:#56CCF2><bold>MILESTONE!</bold></gradient>"
+        - "&f{player} &7is the player"
+        - "&7number &#56CCF2#{join_number}&7!"
+        - "&7Thank you all for playing."
+        - ""
+    title:
+      title: "<gradient:#2F80ED:#56CCF2><bold>#{join_number}</bold></gradient>"
+      subtitle: "&f{player} &7is our player number &f{join_number}"
+      fade-in: 10
+      stay: 60
+      fade-out: 20
+    sound: "ui.toast.challenge_complete"
+    sound-volume: 0.8
+    sound-pitch: 1.0
+    commands:
+      console: []
+      player: []

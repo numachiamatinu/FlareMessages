@@ -1,5 +1,33 @@
 # Changelog — FlareMessages
 
+## 1.1.0
+
+### Added
+- Holidays: `holidays.yml` with messages used only between two dates, every year (`"12-20"` to `"01-06"`) or once
+  (`"2026-12-20"`). While a holiday is active its `welcome`, `first-join` message and `join-quit` lines (by format id)
+  replace the normal ones, then everything goes back by itself. Announcements with `holiday: christmas` rotate only
+  during that holiday, `only-holiday-announcements: true` pauses the others. `/fmes holiday` shows them,
+  `/fmes holiday force <id>` tests one any day, `/fmes holiday auto` goes back to the dates. Comes with Christmas and
+  Halloween examples. New placeholder `{holiday}` / `%flaremessages_holiday%`.
+- World change messages: `worlds.yml` with `enter`, `first-enter` (only the very first time, remembered on the
+  player) and `leave` per world, with title, chat, action bar, boss bar, sound and commands. E.g. a big title the first
+  time in the Nether. A cooldown stops repeats when going back and forth through a portal. Comes with Nether, End and
+  Overworld examples.
+- Discord: joins, leaves, first joins and milestones sent to a Discord channel with a webhook (`discord` in
+  config.yml, off by default), with the player's head as picture and your own texts. Players in vanish or with
+  `flaremessages.silent` are never sent, nobody is ever pinged, and the webhook link is never written in the logs.
+- Fixed-time announcements: `at: ["21:00"]` and `days: [FRIDAY, SATURDAY]` on any announcement, in the timezone of
+  config.yml. With `at` it is sent only at those times (add `in-rotation: true` to keep it in the rotation too).
+  `/fmes list` shows the times.
+
+### Improved
+- `/fmes announce next` restarts only the rotation timer, fixed-time announcements keep their times.
+- The startup banner shows the holidays, the worlds with messages and whether Discord is on.
+
+`holidays.yml` and `worlds.yml` are created on the first start (on your server with the examples turned off, so nothing
+changes until you set `enabled: true`), the new options are added to config.yml by themselves (Discord stays off) and the help texts of `lang/en.yml` are updated (your old file is saved as `en.yml.v2.bak`).
+The rest of your files is not touched.
+
 ## 1.0.4
 
 ### Added
